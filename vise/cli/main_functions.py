@@ -140,6 +140,8 @@ class VaspSet:
         if args.poscar:
             self.args.poscar = args.poscar.absolute()
 
+        cwd = Path.cwd()
+
         for _dir in [d.absolute() for d in args.dirs]:
             if _dir.is_file():
                 logger.info(f"{_dir} is a file, so skipped.")
@@ -163,7 +165,7 @@ class VaspSet:
                 **self._option_kwargs())
 
             vif = VaspInputFiles(options, self._overridden_incar_settings())
-            vif.create_input_files(Path.cwd())
+            vif.create_input_files(cwd)
             if hasattr(self, "_file_transfers"):
                 self._file_transfers.transfer()
             vif.vise_log.to_yaml_file()
