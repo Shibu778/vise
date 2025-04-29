@@ -48,7 +48,7 @@ def test_properties(nonmagnetic_insulator):
 def test_input_options_kwargs(nonmagnetic_insulator):
     actual = nonmagnetic_insulator.input_options_kwargs
     expected = {"vbm_cbm": [1.0, 2.0],
-                "is_magnetization": False,
+                "time_reversal": True,
                 "band_gap": 1.2,
                 "charge": 2}
     assert actual == expected
