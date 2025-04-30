@@ -80,10 +80,8 @@ class StructureKpointsGenerator:
     def _make_structure(self):
         if self._kpt_mode == KpointsMode.uniform:
             self._structure = self._initial_structure.copy()
-        elif self._kpt_mode == KpointsMode.primitive:
+        elif self._kpt_mode in (KpointsMode.primitive, KpointsMode.band):
             self._structure = self._symmetrizer.primitive
-        elif self._kpt_mode == KpointsMode.band:
-            self._structure = self._symmetrizer.band_primitive
         else:
             raise NotImplementedError
         if self._structure != self._initial_structure:

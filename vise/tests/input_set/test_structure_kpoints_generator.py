@@ -80,9 +80,12 @@ def test_mc_structure_band(mc_structure):
                                           kpt_density=1.0)
     generator.generate_input()
     actual = generator.structure.lattice.matrix
-    expected = [[ 6., 3., 0.],
-                [-6., 3., 0.],
+    expected = [[ 6.,-3., 0.],
+                [ 6., 3., 0.],
                 [-4., 0., 7.]]
+    # expected = [[ 6., 3., 0.],
+    #             [-6., 3., 0.],
+    #             [-4., 0., 7.]]
     np.testing.assert_array_almost_equal(actual, expected)
 
 

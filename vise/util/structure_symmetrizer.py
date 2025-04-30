@@ -23,9 +23,9 @@ from vise.util.bravais_lattice import BravaisLattice
 logger = get_logger(__name__)
 
 
-def cell_to_structure(
-        cell: Tuple[List[List[float]], List[List[float]], List[int]]
-) -> Structure:
+CELL = Tuple[List[List[float]], List[List[float]], List[int]]
+
+def cell_to_structure(cell: CELL) -> Structure:
     """
     cell: (Lattice parameters
            [[a_x, a_y, a_z], [b_x, b_y, b_z], [c_x, c_y, c_z]],
@@ -34,6 +34,16 @@ def cell_to_structure(
     """
     species = [Element.from_Z(i) for i in cell[2]]
     return Structure(lattice=cell[0], coords=cell[1], species=species)
+
+
+def structure_to_cell(structure: Structure) -> CELL:
+    lattice = structure.lattice.matrix.tolist()
+
+    frac_coords = structure.frac_coords.tolist()
+
+    z_numbers = [site.specie.Z for site in structure.sites]
+
+    return (lattice, frac_coords, z_numbers)
 
 
 class StructureSymmetrizer:
@@ -76,7 +86,6 @@ class StructureSymmetrizer:
         self._primitive = None
         self._second_primitive = None
         self._seekpath_data = None
-        self._band_primitive = None
 
     def __repr__(self):
         sym_data = self.spglib_sym_data
@@ -162,17 +171,13 @@ class StructureSymmetrizer:
         """Get full information of seekpath band path. """
         logger.info(f"Band mesh distance is set to {self.ref_distance}. "
                     f"To change it, use band_ref_dist option.")
+        cell = structure_to_cell(self.primitive)
         self._seekpath_data = \
-            seekpath.get_explicit_k_path(structure=self.cell,
-                                         symprec=self.symprec,
-                                         angle_tolerance=self.angle_tolerance,
-                                         with_time_reversal=self.time_reversal,
-                                         reference_distance=self.ref_distance)
-        lattice = self._seekpath_data["primitive_lattice"]
-        element_types = self._seekpath_data["primitive_types"]
-        species = [Element.from_Z(i) for i in element_types]
-        positions = self._seekpath_data["primitive_positions"]
-        self._band_primitive = Structure(lattice, species, positions)
+            seekpath.get_explicit_k_path_orig_cell(structure=cell,
+                                                   symprec=self.symprec,
+                                                   angle_tolerance=self.angle_tolerance,
+                                                   with_time_reversal=self.time_reversal,
+                                                   reference_distance=self.ref_distance)
 
     @property
     def sg_number(self):
@@ -193,24 +198,10 @@ class StructureSymmetrizer:
         return self._seekpath_data
 
     @property
-    def band_primitive(self) -> Structure:
-        if self._band_primitive is None:
-            self.find_seekpath_data()
-        return self._band_primitive
-
-    @property
     def is_primitive_lattice_changed(self) -> bool:
         # np.allclose is used for lattice comparison.
         # def allclose(a, b, rtol=1.e-5, atol=1.e-8, equal_nan=False):
         return self.structure.lattice != self.primitive.lattice
-
-    @property
-    def is_band_primitive_lattice_changed(self) -> bool:
-        return self.structure.lattice != self.band_primitive.lattice
-
-    @property
-    def band_primitive_differ_primitive(self) -> bool:
-        return self.primitive.lattice != self.band_primitive.lattice
 
     def irreducible_kpoints(self,
                             num_kpt_list: List[int],

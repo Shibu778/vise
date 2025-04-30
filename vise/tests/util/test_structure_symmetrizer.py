@@ -62,10 +62,13 @@ def test_structure_symmetrizer_mc_conventional(symmetrizer_mc):
 
 
 def test_structure_symmetrizer_mc_band_primitive(symmetrizer_mc):
-    band_matrix = symmetrizer_mc.band_primitive.lattice.matrix
-    expected = np.array([[5., 5., 0.],
-                         [-5., 5., 0.],
+    band_matrix = symmetrizer_mc.primitive.lattice.matrix
+    expected = np.array([[5., -5., 0.],
+                         [5., 5., 0.],
                          [-2., 0., 10.]])
+    # expected = np.array([[5., 5., 0.],
+                         # [-5., 5., 0.],
+                         # [-2., 0., 10.]])
     np.testing.assert_array_almost_equal(band_matrix, expected)
 
 
@@ -78,9 +81,7 @@ def test_structure_symmetrizer_mc_irreducible_kpoints(symmetrizer_mc):
 
 
 def test_structure_symmetrizer_mc_lattice_change(symmetrizer_mc):
-    assert symmetrizer_mc.is_band_primitive_lattice_changed is True
     assert symmetrizer_mc.is_primitive_lattice_changed is True
-    assert symmetrizer_mc.band_primitive_differ_primitive is True
 
 
 def test_sg_number(symmetrizer_mc):
@@ -106,9 +107,7 @@ def test_structure_symmetrizer_bcc_primitive(symmetrizer_bcc):
 
 
 def test_structure_symmetrizer_bcc_lattice_change(symmetrizer_bcc):
-    assert symmetrizer_bcc.is_band_primitive_lattice_changed is True
     assert symmetrizer_bcc.is_primitive_lattice_changed is True
-    assert symmetrizer_bcc.band_primitive_differ_primitive is False
 
 
 def test_structure_symmetrizer_bcc_irreducible_kpoints(symmetrizer_bcc):
