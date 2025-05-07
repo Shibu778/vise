@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #  Copyright (c) 2020. Distributed under the terms of the MIT License.
 import json
+from itertools import chain
 from math import ceil
 from pathlib import Path
 from typing import Tuple, List, Dict, Any
@@ -22,7 +23,7 @@ unoccupied_bands = loadfn(Path(__file__).parent / "unoccupied_bands.yaml")
 # order-preserving semantics. Besides, it does not affect vasp result.
 incar_categories: Dict[str, Any] = \
     dict(loadfn(Path(__file__).parent / "incar_flags.yaml"))
-tag_set = set(tuple(tags) for tags in incar_categories)
+tag_set = set(chain.from_iterable(incar_categories.values()))
 incar_categories["others"] = list(set(incar_params.keys()) - tag_set)
 all_incar_flags: List[str] = sum(incar_categories.values(), [])
 
@@ -80,3 +81,9 @@ def calc_kpar(num_kpoints: int, num_cores: int,
                      f"{unused_core_ratio_threshold} is not adequate.")
 
 
+if __name__ == "__main__":
+    print(tag_set)
+
+
+    print(incar_categories)
+    print(all_incar_flags)
