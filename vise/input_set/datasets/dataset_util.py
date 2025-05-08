@@ -25,6 +25,10 @@ incar_categories: Dict[str, Any] = \
     dict(loadfn(Path(__file__).parent / "incar_flags.yaml"))
 tag_set = set(chain.from_iterable(incar_categories.values()))
 incar_categories["others"] = list(set(incar_params.keys()) - tag_set)
+
+for k, v in defaults.user_incar_tags.items():
+    incar_categories[k] = v
+
 all_incar_flags: List[str] = sum(incar_categories.values(), [])
 
 
@@ -81,9 +85,3 @@ def calc_kpar(num_kpoints: int, num_cores: int,
                      f"{unused_core_ratio_threshold} is not adequate.")
 
 
-if __name__ == "__main__":
-    print(tag_set)
-
-
-    print(incar_categories)
-    print(all_incar_flags)
