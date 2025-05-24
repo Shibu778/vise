@@ -370,7 +370,8 @@ class XcIncarSettings:
 
     @property
     def metagga_optional(self):
-        return "SCAN" if self._xc is Xc.scan else None
+        if self._xc.is_metagga is True:
+            return self._xc.value.upper()
 
 
 
