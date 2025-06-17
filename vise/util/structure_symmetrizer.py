@@ -20,10 +20,12 @@ from vise.util.logger import get_logger
 from vise.error import ViseError
 from vise.util.bravais_lattice import BravaisLattice
 
+
 logger = get_logger(__name__)
 
 
 CELL = Tuple[List[List[float]], List[List[float]], List[int]]
+
 
 def cell_to_structure(cell: CELL) -> Structure:
     """
@@ -53,22 +55,7 @@ class StructureSymmetrizer:
                  angle_tolerance: float = defaults.symmetry_angle_tolerance,
                  time_reversal: bool = True,
                  band_mesh_distance: float = defaults.band_mesh_distance):
-        """Get full information of seekpath band path.
-
-        Note: site properties such as magmom are removed.
-
-        The structures of aP (SG:1, 2), mC (5, 8, 9, 12, 15) and
-        oA (38, 39, 40, 41) can be different between spglib and seekpath.
-        see Y. Hinuma et al. Comput. Mater. Sci. 128 (2017) 140–184
-        -- spglib mC
-         6.048759 -3.479491 0.000000
-         6.048759  3.479491 0.000000
-        -4.030758  0.000000 6.044512
-        -- seekpath mC
-         6.048759  3.479491  0.000000
-        -6.048759  3.479491  0.000000
-        -4.030758  0.000000  6.044512
-        """
+        """Get full information of seekpath band path. """
         self.structure = structure.copy()
         if structure.site_properties:
             logger.warning(f"Site property {structure.site_properties.keys()} "
@@ -110,6 +97,8 @@ class StructureSymmetrizer:
         if not self._spglib_sym_data:
             self._spglib_sym_data = spglib.get_symmetry_dataset(
                 self.cell, self.symprec, self.angle_tolerance)
+            if self._spglib_sym_data is None:
+                raise ValueError("No spglib dataset")
         return self._spglib_sym_data
 
     @property
@@ -172,12 +161,12 @@ class StructureSymmetrizer:
         logger.info(f"Band mesh distance is set to {self.ref_distance}. "
                     f"To change it, use band_ref_dist option.")
         cell = structure_to_cell(self.primitive)
-        self._seekpath_data = \
-            seekpath.get_explicit_k_path_orig_cell(structure=cell,
-                                                   symprec=self.symprec,
-                                                   angle_tolerance=self.angle_tolerance,
-                                                   with_time_reversal=self.time_reversal,
-                                                   reference_distance=self.ref_distance)
+        self._seekpath_data = seekpath.get_explicit_k_path_orig_cell(
+            structure=cell,
+            symprec=self.symprec,
+            angle_tolerance=self.angle_tolerance,
+            with_time_reversal=self.time_reversal,
+            reference_distance=self.ref_distance)
 
     @property
     def sg_number(self):
