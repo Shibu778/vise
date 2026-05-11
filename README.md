@@ -19,7 +19,7 @@ Installation instructions
   - Python 3.7 or higher
 
 Vise depends largely on the following packages, which should be acknowledged sincerely,
-  - pymatgen
+  - pymatgen-core
   - spglib
   - seekpath
   - see requirements.txt for others
