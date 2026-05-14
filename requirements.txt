@@ -1,4 +1,4 @@
-pymatgen
+pymatgen-core
 seekpath
 num2words
 more_itertools

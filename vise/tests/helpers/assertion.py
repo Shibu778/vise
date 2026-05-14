@@ -8,7 +8,7 @@ from pathlib import Path
 from monty.json import MSONable
 from monty.serialization import loadfn
 import numpy as np
-from pymatgen.analysis.structure_matcher import StructureMatcher, \
+from pymatgen.core.structure_matcher import StructureMatcher, \
     ElementComparator
 from pymatgen.core import IStructure
 from vise.util.mix_in import ToYamlFileMixIn
